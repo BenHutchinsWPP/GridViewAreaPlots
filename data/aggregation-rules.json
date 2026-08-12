@@ -1,0 +1,512 @@
+{
+ "version": "3.1.0",
+ "note": "Runtime lookup table only. Keep rationale short here; branch on these rules instead of re-deriving them in app code.",
+ "contract": "Resolve `series` first and build the per-hour series. SUM=add member areas. WEIGHTED_MEAN=sum(x*w)/sum(w) per hour, null when sum(w)==0 (then try fallbackWeight). MEAN=unweighted mean of areas. Charts and stats run on that series only; never sort or box-plot a summed INTENSIVE column. `temporal`=SUM means a period total is meaningful; MEAN means it is not (MW summed over hours is MWh). `derived`={minuend,subtrahend,op} marks a CALCULATED column: it has no source column, its plane is filled at ingest per area from the two operands, and it is present only when both are. op=`sub` (default) is valid ONLY for same-unit EXTENSIVE operands, where sum(a-b) == sum(a)-sum(b). op=`div` does NOT commute with the area collapse, so such a column MUST also be series=WEIGHTED_MEAN weighted by its DENOMINATOR (subtrahend): sum((a/b)*b)/sum(b) == sum(a)/sum(b) restores the ratio of sums. Any other series or weight on a div column is a plausible wrong number.",
+ "columns": [
+  {
+   "header": "Avg LMP Weighted by Gen ($/MWh)",
+   "canonical": "Avg LMP Weighted by Gen ($/MWh)",
+   "unit": "$/MWh",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "Generation (MWh)"
+  },
+  {
+   "header": "Avg LMP Weighted by Load ($/MWh)",
+   "canonical": "Avg LMP Weighted by Load ($/MWh)",
+   "unit": "$/MWh",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "Load (MWh)",
+   "provisional": true
+  },
+  {
+   "header": "LMP - Energy ($/MWh)",
+   "canonical": "LMP - Energy ($/MWh)",
+   "unit": "$/MWh",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "Load (MWh)",
+   "provisional": true
+  },
+  {
+   "header": "LMP Loss Component ($/MWh)",
+   "canonical": "LMP Loss Component ($/MWh)",
+   "unit": "$/MWh",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "Load (MWh)",
+   "provisional": true
+  },
+  {
+   "header": "LMP Congestion Component ($/MWh)",
+   "canonical": "LMP Congestion Component ($/MWh)",
+   "unit": "$/MWh",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "Load (MWh)",
+   "sparse": true,
+   "provisional": true
+  },
+  {
+   "header": "Simple Average LMP($/MWh)",
+   "canonical": "Simple Average LMP($/MWh)",
+   "unit": "$/MWh",
+   "class": "INTENSIVE",
+   "series": "MEAN",
+   "temporal": "MEAN",
+   "provisional": true
+  },
+  {
+   "header": "Generation (MWh)",
+   "canonical": "Generation (MWh)",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "isWeight": true
+  },
+  {
+   "header": "Load (MWh)",
+   "canonical": "Load (MWh)",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "isWeight": true
+  },
+  {
+   "header": "Gen - Load",
+   "canonical": "Gen - Load",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "derived": {
+    "minuend": "Generation (MWh)",
+    "subtrahend": "Load (MWh)"
+   }
+  },
+  {
+   "header": "Generation / Installed Capacity",
+   "canonical": "Generation / Installed Capacity",
+   "unit": "ratio",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "Installed Capacity (MW)",
+   "derived": {
+    "minuend": "Generation (MWh)",
+    "subtrahend": "Installed Capacity (MW)",
+    "op": "div"
+   }
+  },
+  {
+   "header": "Served Load Including Losses (MWh)",
+   "canonical": "Served Load Including Losses (MWh)",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "isWeight": true
+  },
+  {
+   "header": "Unserved Load (MWh)",
+   "canonical": "Unserved Load (MWh)",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "sparse": true
+  },
+  {
+   "header": "Spillage (MWh)",
+   "canonical": "Spillage (MWh)",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "sparse": true
+  },
+  {
+   "header": "Estimated Losses (MWh)",
+   "canonical": "Estimated Losses (MWh)",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM"
+  },
+  {
+   "header": "Import Flow(MWh)",
+   "canonical": "Import Flow(MWh)",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "intraGroupHazard": true
+  },
+  {
+   "header": "Export Flow (MWh)",
+   "canonical": "Export Flow (MWh)",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "intraGroupHazard": true
+  },
+  {
+   "header": "Net Interchange (MWh)",
+   "canonical": "Net Interchange (MWh)",
+   "unit": "MWh",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "derived": {
+    "minuend": "Import Flow(MWh)",
+    "subtrahend": "Export Flow (MWh)"
+   }
+  },
+  {
+   "header": "Generation Revenue (k$)",
+   "canonical": "Generation Revenue (k$)",
+   "unit": "k$",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM"
+  },
+  {
+   "header": "Load Payment (k$)",
+   "canonical": "Load Payment (k$)",
+   "unit": "k$",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM"
+  },
+  {
+   "header": "Generation Cost (k$)",
+   "canonical": "Generation Cost (k$)",
+   "unit": "k$",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM"
+  },
+  {
+   "header": "Unserved Load Cost (k$)",
+   "canonical": "Unserved Load Cost (k$)",
+   "unit": "k$",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "sparse": true
+  },
+  {
+   "header": "Import Cost (k$)",
+   "canonical": "Import Cost (k$)",
+   "unit": "k$",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "intraGroupHazard": true
+  },
+  {
+   "header": "Export Revenue (k$)",
+   "canonical": "Export Revenue (k$)",
+   "unit": "k$",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "intraGroupHazard": true
+  },
+  {
+   "header": " Total Generation Revenue (k$)",
+   "canonical": "Total Generation Revenue (k$)",
+   "unit": "k$",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "provisional": true
+  },
+  {
+   "header": " Total Load Payment (k$)",
+   "canonical": "Total Load Payment (k$)",
+   "unit": "k$",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "provisional": true
+  },
+  {
+   "header": "SO2 Amt",
+   "canonical": "SO2 Amt",
+   "unit": "UNKNOWN_MASS",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM"
+  },
+  {
+   "header": "NOx Amt",
+   "canonical": "NOx Amt",
+   "unit": "UNKNOWN_MASS",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM"
+  },
+  {
+   "header": "CO2 Amt",
+   "canonical": "CO2 Amt",
+   "unit": "UNKNOWN_MASS",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM"
+  },
+  {
+   "header": "SO2 Cost",
+   "canonical": "SO2 Cost",
+   "unit": "UNKNOWN_MONEY",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "degenerate": true
+  },
+  {
+   "header": "NOx Cost",
+   "canonical": "NOx Cost",
+   "unit": "UNKNOWN_MONEY",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM",
+   "degenerate": true
+  },
+  {
+   "header": "CO2 Cost",
+   "canonical": "CO2 Cost",
+   "unit": "UNKNOWN_MONEY",
+   "class": "EXTENSIVE",
+   "series": "SUM",
+   "temporal": "SUM"
+  },
+  {
+   "header": "Installed Capacity (MW)",
+   "canonical": "Installed Capacity (MW)",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "isWeight": true
+  },
+  {
+   "header": "Available Capacity (MW)",
+   "canonical": "Available Capacity (MW)",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN"
+  },
+  {
+   "header": "Committed Capacity (MW)",
+   "canonical": "Committed Capacity (MW)",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN"
+  },
+  {
+   "header": "Net Load (MW)",
+   "canonical": "Net Load (MW)",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN"
+  },
+  {
+   "header": "RD A. S. Requirement",
+   "canonical": "RD A. S. Requirement",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "degenerate": true
+  },
+  {
+   "header": "LFD A. S. Requirement",
+   "canonical": "LFD A. S. Requirement",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "degenerate": true
+  },
+  {
+   "header": "RU A. S. Requirement",
+   "canonical": "RU A. S. Requirement",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "degenerate": true
+  },
+  {
+   "header": "SR A. S. Requirement",
+   "canonical": "SR A. S. Requirement",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "degenerate": true
+  },
+  {
+   "header": "LFU A. S. Requirement",
+   "canonical": "LFU A. S. Requirement",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "degenerate": true
+  },
+  {
+   "header": "RD A. S. Served Amount",
+   "canonical": "RD A. S. Served Amount",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "isWeight": true,
+   "sparse": true
+  },
+  {
+   "header": "LFD A. S. Served Amount",
+   "canonical": "LFD A. S. Served Amount",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "isWeight": true,
+   "sparse": true
+  },
+  {
+   "header": "RU A. S. Served Amount",
+   "canonical": "RU A. S. Served Amount",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "isWeight": true,
+   "sparse": true
+  },
+  {
+   "header": "SR A. S. Served Amount",
+   "canonical": "SR A. S. Served Amount",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "isWeight": true,
+   "sparse": true
+  },
+  {
+   "header": "LFU A. S. Served Amount",
+   "canonical": "LFU A. S. Served Amount",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "isWeight": true,
+   "sparse": true
+  },
+  {
+   "header": "RD A. S. Price",
+   "canonical": "RD A. S. Price",
+   "unit": "$/MW",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "RD A. S. Served Amount",
+   "fallbackWeight": "RD A. S. Requirement",
+   "sparse": true,
+   "provisional": true
+  },
+  {
+   "header": "LFD A. S. Price",
+   "canonical": "LFD A. S. Price",
+   "unit": "$/MW",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "LFD A. S. Served Amount",
+   "fallbackWeight": "LFD A. S. Requirement",
+   "sparse": true,
+   "provisional": true
+  },
+  {
+   "header": "RU A. S. Price",
+   "canonical": "RU A. S. Price",
+   "unit": "$/MW",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "RU A. S. Served Amount",
+   "fallbackWeight": "RU A. S. Requirement",
+   "sparse": true,
+   "provisional": true
+  },
+  {
+   "header": "SR A. S. Price",
+   "canonical": "SR A. S. Price",
+   "unit": "$/MW",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "SR A. S. Served Amount",
+   "fallbackWeight": "SR A. S. Requirement",
+   "sparse": true,
+   "provisional": true
+  },
+  {
+   "header": "LFU A. S. Price",
+   "canonical": "LFU A. S. Price",
+   "unit": "$/MW",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "LFU A. S. Served Amount",
+   "fallbackWeight": "LFU A. S. Requirement",
+   "sparse": true,
+   "provisional": true
+  },
+  {
+   "header": "FR A. S. Requirement",
+   "canonical": "FR A. S. Requirement",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "degenerate": true
+  },
+  {
+   "header": "FR A. S. Served Amount",
+   "canonical": "FR A. S. Served Amount",
+   "unit": "MW",
+   "class": "CAPACITY",
+   "series": "SUM",
+   "temporal": "MEAN",
+   "isWeight": true,
+   "sparse": true
+  },
+  {
+   "header": "FR A. S. Price",
+   "canonical": "FR A. S. Price",
+   "unit": "$/MW",
+   "class": "INTENSIVE",
+   "series": "WEIGHTED_MEAN",
+   "temporal": "WEIGHTED_MEAN",
+   "weight": "FR A. S. Served Amount",
+   "fallbackWeight": "FR A. S. Requirement",
+   "sparse": true
+  }
+ ]
+}

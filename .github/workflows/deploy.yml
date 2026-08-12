@@ -1,0 +1,91 @@
+name: Deploy to GitHub Pages
+
+# The app is static and browser-only (D2: data never leaves the machine), so
+# Pages is the whole deployment. There is no server to configure.
+#
+# parser/block.wasm is a COMMITTED BINARY, which is how D9 is satisfied without
+# a wasm toolchain in CI — building it needs clang 18 plus wasm-ld from lld-18.
+# `npm run prebuild` copies it into public/ so Vite emits it at dist/block.wasm,
+# where pool.ts fetches it as './block.wasm'.
+#
+# ⚠️ Nothing here checks that block.wasm matches parser/block.c. If you change
+# the C, rebuild with ./parser/build.sh and commit the binary in the same PR.
+
+on:
+  push:
+    branches: [main]
+  # So a broken build is caught on the PR rather than on main.
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Never let two deploys race. In-progress runs finish rather than cancel:
+  # cancelling a half-finished Pages deploy can leave the site inconsistent.
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # >= 22.6 for the test scripts: they import the real src/*.ts modules
+          # through Node's built-in type stripping rather than a compiled copy.
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+
+      # tsc --noEmit plus the three assert-based scripts. They run on a
+      # synthetic export generated in memory (test_fixtures.mjs) — no real data
+      # is tracked in or read by this repo.
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # A build that silently shipped without the parser would fail at
+      # compileStreaming on every page load, and the page itself would look
+      # fine until someone dropped a file.
+      - name: Verify the parser shipped
+        run: test -s dist/block.wasm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  deploy:
+    # PRs build and test but must not publish.
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

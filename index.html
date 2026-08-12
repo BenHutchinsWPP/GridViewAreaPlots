@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GridView Area Plots</title>
+  <!-- Inline, so there is no second request and no 404 on every page load.
+       Four bars in the ten-case palette's first colour: a duration curve. -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23fff'/%3E%3Crect x='2' y='3' width='2' height='10' fill='%231f77b4'/%3E%3Crect x='6' y='6' width='2' height='7' fill='%231f77b4'/%3E%3Crect x='10' y='8' width='2' height='5' fill='%231f77b4'/%3E%3C/svg%3E" />
+  <script type="module" src="/src/main.ts"></script>
+</head>
+<body>
+  <div id="app-root" class="app-grid">
+    <!-- Topbar -->
+    <div id="topbar" class="topbar">
+      <div class="topbar-left">
+        <h1 class="app-title">GridView Area Plots</h1>
+      </div>
+      <div class="topbar-center">
+        <button id="add-cases-btn" class="btn btn-add">+ Add cases</button>
+        <button id="save-btn" class="btn btn-save">Save</button>
+        <button id="load-btn" class="btn btn-load" title="Open a saved .gvap bundle">Load…</button>
+      </div>
+      <div class="topbar-right">
+        <span id="memory-readout" class="memory-readout">0 MB · 0 cases</span>
+      </div>
+    </div>
+
+    <!-- Left Rail -->
+    <div id="left-rail" class="left-rail">
+      <!-- CASES Section -->
+      <div id="cases-section" class="rail-section">
+        <h2 class="rail-section-title">CASES</h2>
+        <div id="cases-list" class="cases-list"></div>
+      </div>
+
+      <!-- SERIES Section -->
+      <div id="series-section" class="rail-section">
+        <h2 class="rail-section-title">SERIES</h2>
+        <div id="metric-select" class="rail-control">
+          <label>Metric <span class="rail-hint">ctrl/shift for several</span></label>
+          <select id="metric-dropdown" multiple size="6"></select>
+        </div>
+        <div id="area-select" class="rail-control">
+          <label>Area/Group <button type="button" id="groupings-btn" class="link-btn" title="Edit which grouping each area belongs to, or load a Groupings.csv">edit…</button></label>
+          <select id="area-dropdown" multiple size="6"></select>
+        </div>
+        <div id="series-legend" class="series-legend"></div>
+      </div>
+
+      <!-- FILTERS Section -->
+      <div id="filters-section" class="rail-section">
+        <h2 class="rail-section-title">FILTERS</h2>
+
+        <div class="filter-group">
+          <label class="filter-label">Month<button type="button" class="filter-clear" data-filter="months" title="Clear the month filter">clear</button></label>
+          <div id="month-chips" class="chip-grid"></div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Hour<button type="button" class="filter-clear" data-filter="hoursOfDay" title="Clear the hour filter">clear</button></label>
+          <div id="hour-chips" class="chip-grid"></div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Day<button type="button" class="filter-clear" data-filter="daysOfWeek" title="Clear the day filter">clear</button></label>
+          <div id="day-chips" class="chip-grid"></div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Season<button type="button" class="filter-clear" data-filter="seasons" title="Clear the season filter">clear</button></label>
+          <div id="season-chips" class="chip-grid"></div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">TOU<button type="button" class="filter-clear" data-filter="tou" title="Clear the tou filter">clear</button></label>
+          <div id="tou-chips" class="chip-grid"></div>
+        </div>
+
+        <button id="reset-filters-btn" class="btn btn-reset">Clear all filters <span class="btn-key">R</span></button>
+      </div>
+    </div>
+
+    <!-- Chart Area -->
+    <div id="chart-area" class="chart-grid">
+      <!-- Pane 1: Time series -->
+      <div id="pane-1" class="pane">
+        <div class="pane-header"><span>Time series</span><span class="pane-note"></span><button type="button" id="download-1" class="pane-btn" title="Download the hours currently shown, as CSV">Download</button><button type="button" id="zoom-reset-1" class="pane-btn" title="Reset the zoom on this chart">Reset zoom</button><span class="pane-icon" title="Expand this pane (or press 1)">⤢</span></div>
+        <div id="pane-1-body" class="pane-body"></div>
+      </div>
+
+      <!-- Pane 2: Duration curve -->
+      <div id="pane-2" class="pane">
+        <div class="pane-header"><span>Duration curve</span><span class="pane-note"></span><button type="button" id="zoom-reset-2" class="pane-btn" title="Reset the zoom on this chart">Reset zoom</button><span class="pane-icon" title="Expand this pane (or press 2)">⤢</span></div>
+        <div id="pane-2-body" class="pane-body"></div>
+      </div>
+
+      <!-- Pane 3: Box & whisker -->
+      <div id="pane-3" class="pane">
+        <div class="pane-header"><span>Box &amp; whisker</span><span class="pane-note"></span>
+          <label class="pane-control">by
+            <select id="box-dim-select">
+              <option value="case">case</option>
+              <option value="month">month</option>
+              <option value="hourOfDay">hour of day</option>
+              <option value="dayOfWeek">day of week</option>
+              <option value="season">season</option>
+              <option value="area">area</option>
+            </select>
+          </label>
+          <label class="pane-control"><input type="checkbox" id="box-values-check" /> values</label><span class="pane-icon" title="Expand this pane (or press 3)">⤢</span></div>
+        <div id="pane-3-body" class="pane-body"></div>
+      </div>
+
+      <!-- Pane 4: Statistics -->
+      <div id="pane-4" class="pane">
+        <div class="pane-header"><span>Statistics</span><span class="pane-note"></span><span class="pane-icon" title="Expand this pane (or press 4)">⤢</span></div>
+        <div id="pane-4-body" class="pane-body"></div>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div id="status-bar" class="status-bar">
+      <span id="status-text"></span>
+    </div>
+  </div>
+</body>
+</html>

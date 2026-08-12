@@ -1,0 +1,928 @@
+/* Light theme palette — tuned for projection */
+:root {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f8f8;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666666;
+  --color-border: #e0e0e0;
+  --color-border-light: #f0f0f0;
+  --color-accent: #0066cc;
+  --color-accent-hover: #0052a3;
+  --color-chart-grid: #e8e8e8;
+
+  /* Categorical colors for cases (projector-safe) */
+  --color-case-1: #1f77b4;
+  --color-case-2: #ff7f0e;
+  --color-case-3: #2ca02c;
+  --color-case-4: #d62728;
+  --color-case-5: #9467bd;
+  --color-case-6: #8c564b;
+  --color-case-7: #e377c2;
+  --color-case-8: #7f7f7f;
+  --color-case-9: #bcbd22;
+  --color-case-10: #17becf;
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-base: 13px;
+  --font-size-small: 12px;
+  --font-size-title: 14px;
+}
+
+/* One theme, light, tuned for projection (GUI decision 8). A dark-mode
+   toggle is a preference nobody asked for; a palette that survives a
+   washed-out conference-room projector is a requirement everyone has. */
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+/* Main app grid */
+.app-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  grid-template-rows: 48px 1fr 28px;
+  height: 100%;
+  gap: 0;
+}
+
+/* Topbar */
+.topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  gap: 16px;
+}
+
+.topbar-left {
+  flex-shrink: 0;
+}
+
+.app-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.topbar-center {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+}
+
+.topbar-right {
+  flex-grow: 1;
+  text-align: right;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.memory-readout {
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+/* Buttons */
+.btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn-reset {
+  width: 100%;
+  margin-top: 14px;
+  padding: 9px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-key {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 4px;
+  margin-left: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  color: var(--color-text-secondary);
+}
+
+/* Left Rail */
+.left-rail {
+  grid-row: 2;
+  grid-column: 1;
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 0;
+  background: var(--color-bg-secondary);
+}
+
+.rail-section {
+  padding: 0 12px 16px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.rail-section:last-child {
+  border-bottom: none;
+}
+
+.rail-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.cases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.case-item {
+  padding: 6px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+
+.case-item:hover {
+  background: var(--color-border-light);
+}
+
+.rail-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.rail-control label {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.rail-control select {
+  padding: 4px 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.filter-group {
+  margin-bottom: 12px;
+}
+
+.filter-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.filter-clear {
+  font: inherit;
+  font-weight: 400;
+  font-size: 10px;
+  padding: 0 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.filter-clear:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Disabled means "this filter is already unset" -- the button stays in place
+ * rather than disappearing, so the row does not reflow on every click. */
+.filter-clear:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.chip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  gap: 4px;
+  min-height: 24px;
+}
+
+/* Chart Area */
+.chart-grid {
+  grid-row: 2;
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
+  background: var(--color-border);
+  padding: 0;
+  overflow: hidden;
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-primary);
+  min-height: 0;
+  min-width: 0;
+}
+
+.pane-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  height: 28px;
+}
+
+.pane-icon {
+  cursor: pointer;
+  margin-left: 8px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.pane-icon:hover {
+  opacity: 1;
+}
+
+.pane-control {
+  margin-left: auto;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.pane-body {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Status Bar */
+.status-bar {
+  grid-column: 1 / -1;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+#status-text {
+  font-family: 'Monaco', 'Menlo', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Focus mode (fullscreen pane) */
+.pane.focused {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+}
+
+.chart-grid.focus-mode {
+  position: fixed;
+  top: 48px;
+  left: 320px;
+  right: 0;
+  bottom: 28px;
+}
+
+/* Chips */
+.chip {
+  padding: 3px 0;
+  font-size: 11px;
+  line-height: 1.4;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  border-radius: 3px;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+}
+
+.chip-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
+}
+
+#month-chips { grid-template-columns: repeat(6, 1fr); }
+#hour-chips { grid-template-columns: repeat(12, 1fr); }
+#day-chips { grid-template-columns: repeat(7, 1fr); }
+#season-chips { grid-template-columns: repeat(4, 1fr); }
+#tou-chips { grid-template-columns: repeat(2, 1fr); }
+
+/* Series legend. The CASES list is still the case switch; once a query can
+ * draw case x area x metric, the colour mapping needs its own list. */
+.series-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px 4px;
+}
+
+.series-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.series-legend-row span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rail-hint {
+  font-weight: 400;
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+
+/* Case list — this is the legend, and it appears exactly once */
+.case-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.45;
+}
+
+.case-item.case-on { opacity: 1; }
+
+.case-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.case-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.case-remove {
+  border: none;
+  background: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.case-remove:hover { color: var(--color-case-4); }
+
+.case-empty {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+/* Pane headers and inline warnings */
+.pane-header > span:first-child { flex-shrink: 0; }
+
+.pane-note {
+  flex: 1;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  padding-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Header actions: drag-zoom is undone here as well as by a double-click. */
+.pane-btn {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 6px;
+  margin-left: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pane-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.pane-control input[type='checkbox'] {
+  vertical-align: -1px;
+  margin-right: 2px;
+}
+
+.link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  margin-left: 6px;
+  font: inherit;
+  font-size: 10px;
+  color: var(--color-accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pane-control select {
+  font-size: 11px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border-radius: 3px;
+}
+
+/* Warnings render inline, in the pane they concern (GUI decision 7) */
+.pane-banner {
+  margin: 8px;
+  padding: 8px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  line-height: 1.45;
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+}
+
+.pane-banner-refusal {
+  border-left-color: var(--color-case-4);
+  color: var(--color-text-primary);
+}
+
+.box-canvas { display: block; }
+
+/* The y-axis value under the cursor, pinned to the axis it belongs to. */
+.axis-tag {
+  position: absolute;
+  z-index: 11;
+  transform: translateY(-50%);
+  pointer-events: none;
+  padding: 0 4px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+  background: var(--color-text-primary);
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+/* Hover readout on the two uPlot panes. Values only: the case-to-colour
+ * mapping is learned once from the rail (decision 5), so this box repeats
+ * the colours but is not a second legend. */
+.chart-tip {
+  position: absolute;
+  top: 6px;
+  z-index: 10;
+  pointer-events: none;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 5px 7px;
+  font-size: 11px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+}
+
+.chart-tip-x {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.chart-tip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chart-tip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.chart-tip-row b {
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.chart-tip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Stats table */
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-table th {
+  text-align: right;
+  padding: 4px 8px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-primary);
+}
+
+.stats-table th:first-child,
+.stats-table td:first-child { text-align: left; }
+
+.stats-table td {
+  text-align: right;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--color-border-light);
+  white-space: nowrap;
+}
+
+.stats-refusal {
+  text-align: left !important;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  white-space: normal !important;
+}
+
+.stats-footnote,
+.stats-note {
+  margin: 8px;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+}
+
+.stats-note { border-left: 2px solid var(--color-border); padding-left: 6px; }
+
+#pane-4-body { overflow-y: auto; }
+
+/* Focus mode hides the other three panes rather than shrinking them */
+.chart-grid.focus-mode .pane:not(.focused) { display: none; }
+
+/* Drop target — the whole window is one */
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.88);
+  border: 3px dashed var(--color-accent);
+  color: var(--color-accent);
+  font-size: 18px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.drop-overlay.visible { display: flex; }
+
+/* Column picker */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.modal {
+  width: min(680px, 90vw);
+  max-height: 84vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 6px;
+  background: var(--color-bg-primary);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.modal h2 { font-size: 16px; }
+
+.modal-subtitle,
+.modal-readout {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+.modal-readout {
+  font-family: 'Monaco', 'Menlo', monospace;
+  color: var(--color-text-primary);
+}
+
+.modal-toolbar { display: flex; gap: 8px; }
+
+/* Column picker folders. <details> does the open/close; this only styles it. */
+.picker-folder {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 6px;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+  border-radius: 3px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.picker-count {
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.modal-list details > .modal-row { padding-left: 18px; }
+
+/* Calculated columns. Not in any export's header, so the folder is marked
+ * rather than reading as another block of source data. */
+.picker-calculated {
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-bg-secondary);
+  border-radius: 3px;
+}
+
+.picker-calculated > .picker-folder { color: var(--color-accent); }
+
+.picker-calculated > .modal-row .modal-row-name { font-style: italic; }
+
+/* Grouping editor: groups | members of the selected group | the area axis.
+ * Membership is many-to-many, so an area lives on the right until it is
+ * dragged in and stays available to every other group afterwards. */
+.modal-wide { width: min(980px, 94vw); }
+
+.groups-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1.2fr;
+  gap: 10px;
+  min-height: 320px;
+}
+
+.groups-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.groups-head {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.groups-list {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 4px;
+  min-height: 240px;
+  max-height: 46vh;
+}
+
+.groups-dropping {
+  border-color: var(--color-accent);
+  background: var(--color-bg-secondary);
+}
+
+.groups-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: grab;
+  user-select: none;
+}
+
+.groups-item:hover { background: var(--color-bg-secondary); }
+.groups-item > span:first-child {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.groups-group { cursor: pointer; }
+
+.groups-selected {
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+.groups-selected:hover { background: var(--color-accent); }
+.groups-selected .groups-badge { color: #ffffff; border-color: rgba(255, 255, 255, 0.5); }
+
+.groups-badge {
+  font-size: 10px;
+  padding: 0 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+}
+
+/* An area a group claims but nothing can plot: either not in this build, or
+ * carrying no data in the cases that are loaded. */
+.groups-item-missing { color: var(--color-case-4); }
+
+.groups-flag {
+  font-size: 10px;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.groups-empty {
+  padding: 8px 6px;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+.groups-newrow { display: flex; gap: 6px; }
+
+/* .modal-filter is flex:1 for the horizontal toolbars it was written for;
+ * in a vertical column that stretches it into a tall empty box. */
+.groups-column > .modal-filter { flex: 0 0 auto; }
+
+.modal-filter {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+.modal-list {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 4px;
+  min-height: 200px;
+}
+
+.modal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.modal-row:hover { background: var(--color-bg-secondary); }
+.modal-row-name { flex: 1; }
+.modal-row-locked { color: var(--color-text-primary); }
+.modal-row-dead { color: var(--color-text-secondary); }
+
+.modal-row-tag {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: var(--color-border-light);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
+}
+
+.btn-primary:hover { background: var(--color-accent-hover); color: #ffffff; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Print styles */
+@media print {
+  .topbar,
+  .left-rail,
+  .status-bar {
+    display: none;
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .pane:nth-child(n + 2) {
+    display: none;
+  }
+}

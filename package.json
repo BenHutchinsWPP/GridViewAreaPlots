@@ -1,0 +1,19 @@
+{
+  "name": "gridview-area-plots",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "prebuild": "mkdir -p public && cp parser/block.wasm public/block.wasm",
+    "test": "tsc --noEmit && node test_calendar.mjs && node test_kernels.mjs && node test_ingest.mjs"
+  },
+  "dependencies": {
+    "uplot": "^1.6.32"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2",
+    "vite": "^5.4.0"
+  }
+}

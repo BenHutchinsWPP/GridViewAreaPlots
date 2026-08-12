@@ -1,0 +1,35 @@
+# ── REAL UTILITY DATA — NEVER COMMIT ────────────────────────────────
+# "the results must remain private. NO LEAKING THE DATA."
+# This repo has a public-facing GitHub remote and is destined for GitHub Pages.
+# Verify before every commit:  git check-ignore -v testcasefull.csv
+testcasefull.csv
+*full.csv
+/real/
+**/real-data/
+/tmp-data/
+
+# Real exports and the real grouping structure. testcase.csv is 86 rows of a
+# genuine export (real values, real area codes); Groupings.csv is the utility's
+# actual area -> grouping rollup. Both stay local. The tests build their own
+# synthetic export and mapping in test_fixtures.mjs — nothing data-shaped is
+# tracked in this repo.
+testcase.csv
+Groupings.csv
+
+# ── ARCHIVED EXPLORATION — untracked by design ──────────────────────
+# The feasibility spike: benchmark harnesses, generators, raw result JSON,
+# and the two superseded planning docs (orchestrate.md, spec.md).
+# Nothing here is needed for normal development.
+/archive/
+
+# Build artifacts
+node_modules/
+dist/
+.vite/
+.DS_Store
+
+# parser/block.wasm is NOT ignored: D9 requires either a CI build step or a
+# committed binary, and a Pages deploy without it fails at compileStreaming.
+# public/block.wasm is the prebuild copy of that same file — generated, so
+# ignored.
+public/block.wasm
